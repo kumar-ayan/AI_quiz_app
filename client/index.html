@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuizForge – AI-Powered Quiz Generator</title>
+    <meta name="description" content="Generate intelligent multiple-choice quizzes on any topic instantly using AI. Powered by QuizForge." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ── Animated Background ── -->
+    <div class="bg-orbs" aria-hidden="true">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <!-- ── Main App ── -->
+    <main class="app-container">
+
+      <!-- Header -->
+      <header class="app-header">
+        <div class="logo-wrap">
+          <span class="logo-icon" aria-hidden="true">⚡</span>
+          <h1 class="logo-text">QuizForge</h1>
+        </div>
+        <p class="tagline">Turn any topic into a quiz — powered by AI</p>
+      </header>
+
+      <!-- Generator Card -->
+      <section class="generator-card" aria-label="Quiz generator">
+        <div class="input-group">
+          <label for="topic-input" class="input-label">Enter a topic</label>
+          <div class="input-row">
+            <div class="input-wrapper">
+              <span class="input-icon" aria-hidden="true">🎯</span>
+              <input
+                id="topic-input"
+                type="text"
+                class="topic-input"
+                placeholder="e.g. Machine Learning, World War II, Photosynthesis…"
+                maxlength="200"
+                autocomplete="off"
+                spellcheck="false"
+              />
+            </div>
+            <button id="generate-btn" class="generate-btn" type="button">
+              <span class="btn-text">Generate Quiz</span>
+              <span class="btn-icon" aria-hidden="true">→</span>
+            </button>
+          </div>
+          <div class="char-count" id="char-count">0 / 200</div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state hidden" aria-live="polite" aria-label="Loading">
+          <div class="spinner">
+            <div class="spinner-ring"></div>
+          </div>
+          <div class="loading-text">
+            <p class="loading-title">Generating your quiz…</p>
+            <p class="loading-sub" id="loading-sub">Crafting questions with AI</p>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="error-state hidden" role="alert" aria-live="assertive">
+          <span class="error-icon" aria-hidden="true">⚠️</span>
+          <p id="error-message" class="error-message">Something went wrong.</p>
+        </div>
+      </section>
+
+      <!-- Quiz Output -->
+      <section id="quiz-output" class="quiz-output hidden" aria-label="Generated quiz">
+        <div class="quiz-header">
+          <div class="quiz-meta">
+            <h2 id="quiz-topic-title" class="quiz-topic-title"></h2>
+            <span class="quiz-badge">5 Questions</span>
+          </div>
+          <button id="regenerate-btn" class="regenerate-btn" type="button">
+            <span>↺</span> Regenerate
+          </button>
+        </div>
+        <div id="questions-container" class="questions-container"></div>
+        <div class="quiz-footer">
+          <button id="new-quiz-btn" class="new-quiz-btn" type="button">
+            ✦ Start New Quiz
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <p>Built with <span class="heart">♥</span> using AI · QuizForge</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
