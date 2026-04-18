@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const OpenAI = require("openai").default;
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -10,13 +10,9 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// ─── OpenAI Client ────────────────────────────────────────────────────────────
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_BASE_URL || "https://api.openai.com/v1",
-});
-
-const AI_MODEL = process.env.AI_MODEL || "gpt-4o-mini";
+// ─── Gemini Client ────────────────────────────────────────────────────────────
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const AI_MODEL = process.env.AI_MODEL || "gemini-1.5-flash";
 
 // ─── Prompt Builder ───────────────────────────────────────────────────────────
 function buildPrompt(topic) {
@@ -109,26 +105,16 @@ app.post("/api/quiz/generate", async (req, res) => {
   }
 
   try {
-    console.log(`[QuizForge] Generating quiz for topic: "${trimmedTopic}"`);
+    console.log(`[QuizForge] Generating quiz for topic: "${trimmedTopic}" using Gemini`);
 
-    const completion = await openai.chat.completions.create({
+    const model = genAI.getGenerativeModel({
       model: AI_MODEL,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are an expert quiz creator. You always return well-structured JSON arrays with exactly 5 multiple-choice questions. Never include markdown formatting in your response.",
-        },
-        {
-          role: "user",
-          content: buildPrompt(trimmedTopic),
-        },
-      ],
-      temperature: 0.7,
-      max_tokens: 2000,
+      systemInstruction: "You are an expert quiz creator. You always return well-structured JSON arrays with exactly 5 multiple-choice questions. Never include markdown formatting in your response.",
     });
 
-    const rawContent = completion.choices[0]?.message?.content;
+    const result = await model.generateContent(buildPrompt(trimmedTopic));
+    const rawContent = result.response.text();
+
     if (!rawContent) throw new Error("Empty response from AI.");
 
     const questions = parseAIResponse(rawContent);
@@ -144,15 +130,12 @@ app.post("/api/quiz/generate", async (req, res) => {
   } catch (err) {
     console.error("[QuizForge] ❌ Error:", err.message);
 
-    // OpenAI API errors
-    if (err.status === 401) {
+    // Common Gemini SDK errors
+    if (err.message?.includes("API_KEY_INVALID")) {
       return res.status(500).json({ success: false, error: "Invalid API key. Please check your server configuration." });
     }
-    if (err.status === 429) {
+    if (err.message?.includes("QUOTA_EXCEEDED") || err.status === 429) {
       return res.status(429).json({ success: false, error: "Rate limit reached. Please try again in a moment." });
-    }
-    if (err.status === 503 || err.code === "ECONNREFUSED") {
-      return res.status(503).json({ success: false, error: "AI service is temporarily unavailable. Please try again." });
     }
 
     return res.status(500).json({
