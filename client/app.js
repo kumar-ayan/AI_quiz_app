@@ -192,10 +192,24 @@ function buildQuestionCard(q, idx) {
   optionsList.className = "options-list";
   optionsList.setAttribute("role", "list");
 
+  // Answer & Explanation (Hidden by default)
+  const answerSection = document.createElement("div");
+  answerSection.className = "answer-section hidden";
+
+  answerSection.innerHTML = `
+    <span class="answer-tag">Correct Answer</span>
+    <p class="answer-text">${escapeHtml(q.answer)}</p>
+    <span class="explanation-tag">Explanation</span>
+    <p class="explanation-text">${escapeHtml(q.explanation)}</p>
+  `;
+
+  const optionItems = [];
+
   q.options.forEach((opt, optIdx) => {
     const isCorrect = opt === q.answer;
     const li = document.createElement("li");
-    li.className = `option-item${isCorrect ? " correct" : ""}`;
+    li.className = "option-item";
+    li.style.cursor = "pointer";
 
     const letter = document.createElement("span");
     letter.className = "option-letter";
@@ -209,27 +223,33 @@ function buildQuestionCard(q, idx) {
     li.appendChild(letter);
     li.appendChild(text);
 
-    if (isCorrect) {
-      const tick = document.createElement("span");
-      tick.className = "correct-tick";
-      tick.setAttribute("aria-label", "Correct answer");
-      tick.textContent = "✓";
-      li.appendChild(tick);
-    }
+    const tick = document.createElement("span");
+    tick.className = "correct-tick hidden";
+    tick.setAttribute("aria-label", "Correct answer");
+    tick.textContent = "✓";
+    li.appendChild(tick);
+
+    li.addEventListener("click", () => {
+      if (card.classList.contains("answered")) return;
+
+      card.classList.add("answered");
+      answerSection.classList.remove("hidden");
+
+      // Mark all options based on correctness
+      optionItems.forEach((item) => {
+        item.li.style.cursor = "default";
+        if (item.isCorrect) {
+          item.li.classList.add("correct");
+          item.tick.classList.remove("hidden");
+        } else if (item.opt === opt) {
+          item.li.classList.add("incorrect");
+        }
+      });
+    });
 
     optionsList.appendChild(li);
+    optionItems.push({ li, opt, isCorrect, tick });
   });
-
-  // Answer & Explanation
-  const answerSection = document.createElement("div");
-  answerSection.className = "answer-section";
-
-  answerSection.innerHTML = `
-    <span class="answer-tag">Correct Answer</span>
-    <p class="answer-text">${escapeHtml(q.answer)}</p>
-    <span class="explanation-tag">Explanation</span>
-    <p class="explanation-text">${escapeHtml(q.explanation)}</p>
-  `;
 
   card.appendChild(numEl);
   card.appendChild(textEl);

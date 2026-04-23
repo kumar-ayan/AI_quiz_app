@@ -503,6 +503,17 @@ body {
   border-color: rgba(0, 212, 170, 0.5);
 }
 
+.option-item.incorrect {
+  background: rgba(255, 92, 122, 0.08);
+  border-color: rgba(255, 92, 122, 0.5);
+}
+
+.question-card:not(.answered) .option-item:hover {
+  background: var(--surface-3);
+  border-color: var(--primary);
+  transform: translateX(4px);
+}
+
 .option-letter {
   display: flex;
   align-items: center;
@@ -525,6 +536,12 @@ body {
   border-color: var(--accent);
 }
 
+.option-item.incorrect .option-letter {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+
 .option-text {
   font-size: 0.9rem;
   color: var(--text-2);
@@ -535,6 +552,10 @@ body {
 .option-item.correct .option-text {
   color: var(--accent);
   font-weight: 500;
+}
+
+.option-item.incorrect .option-text {
+  color: var(--danger);
 }
 
 .correct-tick {

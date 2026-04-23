@@ -16,7 +16,9 @@ const AI_MODEL = process.env.AI_MODEL || "gemini-1.5-flash";
 
 // ─── Prompt Builder ───────────────────────────────────────────────────────────
 function buildPrompt(topic) {
-  return `Generate 5 multiple choice questions on the topic: "${topic}".
+  return `You are an expert quiz creator. You always return well-structured JSON arrays with exactly 5 multiple-choice questions. Never include markdown formatting in your response.
+
+Generate 5 multiple choice questions on the topic: "${topic}".
 
 Rules:
 - Each question must have exactly 4 options
@@ -109,7 +111,6 @@ app.post("/api/quiz/generate", async (req, res) => {
 
     const model = genAI.getGenerativeModel({
       model: AI_MODEL,
-      systemInstruction: "You are an expert quiz creator. You always return well-structured JSON arrays with exactly 5 multiple-choice questions. Never include markdown formatting in your response.",
     });
 
     const result = await model.generateContent(buildPrompt(trimmedTopic));
