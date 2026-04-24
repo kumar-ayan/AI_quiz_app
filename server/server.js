@@ -151,8 +151,13 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", service: "QuizForge API", model: AI_MODEL });
 });
 
-// ─── Start Server ─────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`🚀 QuizForge server running on http://localhost:${PORT}`);
-  console.log(`🤖 Using model: ${AI_MODEL}`);
-});
+// ─── Export for Vercel ────────────────────────────────────────────────────────
+module.exports = app;
+
+// ─── Start Server (Local only) ────────────────────────────────────────────────
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`🚀 QuizForge server running on http://localhost:${PORT}`);
+    console.log(`🤖 Using model: ${AI_MODEL}`);
+  });
+}

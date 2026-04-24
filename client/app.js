@@ -4,7 +4,7 @@
  */
 
 // ── Config ──────────────────────────────────────────────────────────────────
-const API_BASE = "http://localhost:3001";
+const API_BASE = window.location.origin;
 const OPTION_LETTERS = ["A", "B", "C", "D"];
 
 const LOADING_MESSAGES = [
